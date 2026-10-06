@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you reference this coursework repository, please cite the student author and the assigned Gaze3P paper."
+title: "Critical Analysis and Reproduction of Gaze3P"
+type: software
+authors:
+  - family-names: "Çakırer"
+    given-names: "Burak Bekir"
+version: "1.0"
+date-released: "2026-10-06"

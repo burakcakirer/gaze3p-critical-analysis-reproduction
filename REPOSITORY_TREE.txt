@@ -1,0 +1,25 @@
+gaze3p-critical-analysis-reproduction/
+├── .gitignore
+├── CITATION.cff
+├── README.md
+├── REPOSITORY_TREE.txt
+├── requirements.txt
+├── run_all.py
+├── report/
+│   ├── Gaze3P_Critical_Analysis_Report_Burak_Bekir_Cakirer.docx
+│   └── Gaze3P_Critical_Analysis_Report_Burak_Bekir_Cakirer.pdf
+├── src/
+│   ├── mappings.py
+│   ├── reproduce_figure7.py
+│   └── synthetic_ldp_experiment.py
+├── outputs/
+│   ├── epsilon_mappings.csv
+│   ├── figure_mapping.png
+│   ├── synthetic_ldp_raw.csv
+│   ├── synthetic_ldp_summary.csv
+│   └── synthetic_ldp_utility.png
+├── docs/
+│   ├── AI_USAGE_DISCLOSURE.md
+│   └── REPRODUCTION_NOTES.md
+└── paper/
+    └── README.md
