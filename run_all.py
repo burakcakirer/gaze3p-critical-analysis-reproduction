@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parent
 scripts = [
     ROOT / "src" / "reproduce_figure7.py",
     ROOT / "src" / "synthetic_ldp_experiment.py",
+    ROOT / "src" / "extended_sensitivity_experiment.py",
 ]
 
 for script in scripts:

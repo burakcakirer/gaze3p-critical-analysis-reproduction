@@ -1,26 +1,16 @@
-# Generative AI Usage Disclosure
+# Generative AI use disclosure — report revision 14 October 2026
 
-## Tool
-ChatGPT (OpenAI)
+**Tool:** ChatGPT (OpenAI).
 
-## Tasks supported
-Generative AI was used to assist with:
+**Assistance:** code development, Python test design, numerical experiment automation, code debugging, fact checking against the assigned publication, compilation of published metrics with source labels, source-document conversion to LaTeX, DOCX/PDF typesetting, spelling and grammar revision, README/repository documentation, and packaging.
 
-- Python code development and debugging for the reproduction scripts
-- code documentation and repository organization
-- organization of factual material extracted from the assigned paper
-- language editing and proofreading
-- formatting of the final report
+**Representative prompts** included:
 
-The student's critical arguments concerning gaze reliability, experimental priming, demographic bias, the sensitivity of gaze data, person-specific deployment, the trusted-analyst assumption, the threat model, and the privacy-rating-to-epsilon mapping were supplied by the student and were edited for academic clarity rather than generated as new arguments.
+1. Implement and verify the four published seven-category epsilon mappings.
+2. Develop runnable scripts for a synthetic randomized-response experiment and a controlled parameter sweep, with CSV and plot outputs.
+3. Produce a consistent `main.tex`, report PDF, DOCX, and repository file tree for Overleaf and GitHub Desktop.
+4. Debug the full experiment pipeline and create tests for mapping endpoints and input validation.
 
-## Representative prompts
-Representative prompts included requests to:
+**Substantive intellectual work:** The existing critical-analysis arguments in Section 5 of the earlier submitted report have been retained. The additional report materials are factual statements attributed to the original paper, experiment specification, and machine-computed result tables. The section flagging student interpretation is explicitly marked as **not yet completed by the student**; it must not be mistaken for independently authored critical evaluation.
 
-1. implement the four privacy-level-to-epsilon mappings from Section 6.1;
-2. prepare reproducible Python scripts and organize experimental outputs;
-3. debug and verify the reproduction code; and
-4. improve the academic English of student-written critical-analysis paragraphs.
-
-## Verification
-Equations and paper-reported values were checked against the assigned paper. The reproduction scripts were executed locally, generated CSV outputs were inspected, and the plots were generated from those outputs. The student reviewed the critical-analysis content and remains responsible for all submitted claims, citations, code, and results.
+**Verification:** Scripts executed locally, mapping tests passed, report PDF compiled, DOCX rendered. The original individual-level Gaze3P dataset was not in the supplied ZIP and has not been analyzed here. Student must verify citations, contents, results, and the accuracy of this disclosure before final submission.

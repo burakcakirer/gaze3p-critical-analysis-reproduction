@@ -1,0 +1,9 @@
+reported_observation,paper_reported_value,source_section,provenance
+Binary perceived-privacy (person-independent SVM),0.64 accuracy,Table 1,original_paper_not_reproduced
+Binary perceived-privacy (person-specific Transformer),0.81 accuracy,Table 1,original_paper_not_reproduced
+Binary perceived-privacy (gaze + stimuli Transformer),0.97 accuracy,Table 1,original_paper_not_reproduced
+Binary perception (residual gaze maps Transformer),0.31 accuracy,Table 1,original_paper_not_reproduced
+Privacy-expertise prediction (Random Forest),0.87 accuracy,Table 3,original_paper_not_reproduced
+Expert / non-expert gaze duration comparison,p = 0.03,Section 5.2,original_paper_not_reproduced
+Privacy-expectation follow-up,3.8 / 5 mean rating,Section 6.2,original_paper_not_reproduced
+"Sequential mapping preference (follow-up, N=20)",68% of cases,Section 6.2,original_paper_not_reproduced

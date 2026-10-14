@@ -1,25 +1,35 @@
-gaze3p-critical-analysis-reproduction/
-├── .gitignore
-├── CITATION.cff
-├── README.md
-├── REPOSITORY_TREE.txt
-├── requirements.txt
-├── run_all.py
-├── report/
-│   ├── Gaze3P_Critical_Analysis_Report_Burak_Bekir_Cakirer.docx
-│   └── Gaze3P_Critical_Analysis_Report_Burak_Bekir_Cakirer.pdf
-├── src/
-│   ├── mappings.py
-│   ├── reproduce_figure7.py
-│   └── synthetic_ldp_experiment.py
-├── outputs/
-│   ├── epsilon_mappings.csv
-│   ├── figure_mapping.png
-│   ├── synthetic_ldp_raw.csv
-│   ├── synthetic_ldp_summary.csv
-│   └── synthetic_ldp_utility.png
-├── docs/
-│   ├── AI_USAGE_DISCLOSURE.md
-│   └── REPRODUCTION_NOTES.md
-└── paper/
-    └── README.md
+Repository file index — updated 14 October 2026
+.gitattributes
+.gitignore
+CITATION.cff
+README.md
+REPOSITORY_TREE.txt
+docs/AI_USAGE_DISCLOSURE.md
+docs/REPRODUCTION_NOTES.md
+docs/STUDENT_REVIEW_REQUIRED.md
+outputs/epsilon_mappings.csv
+outputs/extended_sensitivity_0pct.png
+outputs/extended_sensitivity_20pct.png
+outputs/extended_sensitivity_raw.csv
+outputs/extended_sensitivity_summary.csv
+outputs/figure_mapping.png
+outputs/paper_reported_dataset_findings.csv
+outputs/synthetic_ldp_raw.csv
+outputs/synthetic_ldp_summary.csv
+outputs/synthetic_ldp_utility.png
+paper/README.md
+report/Gaze3P_Critical_Analysis_Final_Burak_Bekir_Cakirer.docx
+report/Gaze3P_Critical_Analysis_Final_Burak_Bekir_Cakirer.pdf
+report/figures/extended_sensitivity_0pct.png
+report/figures/extended_sensitivity_20pct.png
+report/figures/figure_mapping.png
+report/figures/synthetic_ldp_utility.png
+report/main.tex
+requirements.txt
+run_all.py
+src/dataset_ratings_summary.py
+src/extended_sensitivity_experiment.py
+src/mappings.py
+src/reproduce_figure7.py
+src/synthetic_ldp_experiment.py
+tests/test_reproduction.py

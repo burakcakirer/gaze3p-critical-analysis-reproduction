@@ -1,0 +1,264 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.1cm,headheight=14pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Lato}
+\usepackage{microtype}
+\usepackage{graphicx}
+\graphicspath{{figures/}{report/figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, urlcolor=blue!55!black}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setcounter{secnumdepth}{0}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Gaze3P: Critical Analysis and Reproduction}
+\fancyhead[R]{\small Burak Bekir Çakırer}
+\fancyfoot[C]{\thepage}
+\begin{document}
+
+\begin{center}{\LARGE\bfseries Critical Analysis and Reproduction of Gaze3P: Gaze-Based Prediction of User-Perceived Privacy}\end{center}
+
+\begin{center}{\large Data Privacy - Academic Paper Analysis}\end{center}
+\begin{center}Burak Bekir Çakırer  |  Student ID: 2211011008  |  14 October 2026\end{center}\vspace{1em}
+\section*{1. Introduction}
+
+Privacy is not only a technical property but also a subjective judgment. The same information can be considered highly sensitive by one user and relatively harmless by another, and these judgments can change with context, experience, and knowledge. Elfares et al. (2025) address this problem by asking whether eye-gaze behavior can provide an implicit and dynamic signal of user-perceived privacy. Their central motivation is that conventional methods, especially questionnaires, require explicit user input and may not reflect how privacy judgments change during interaction.
+
+
+The paper studies three research questions. First, it asks whether gaze can act as an implicit indicator of perceived privacy. Second, it evaluates how accurately machine-learning models can infer privacy judgments from gaze alone. Third, it investigates whether predicted privacy levels can be integrated into privacy-preserving mechanisms, particularly Differential Privacy (DP), by mapping perceived privacy to the privacy-budget parameter epsilon. The resulting system therefore connects behavioral sensing, machine learning, and formal privacy mechanisms.
+
+
+This report reconstructs the paper's study design, threat model, assumptions, and contributions; critically evaluates the proposed architecture; and reproduces the paper's privacy-level-to-epsilon mapping procedure. A controlled synthetic experiment then applies the same mappings to a heterogeneous randomized-response mechanism. The extension is intentionally not presented as a reproduction of the paper's Table 4 because the data, privacy mechanism, and utility metric are different.
+
+
+\section*{2. Study Model and Contributions}
+
+The paper introduces Gaze3P, a dataset designed for studying perceived privacy through gaze. The final dataset contains 100 participants after three participants were excluded because of calibration failures. Participants were between 18 and 35 years old, represented 25 nationalities, and included 12 self-reported privacy experts. The visual stimuli were sampled from the VISPR dataset and covered privacy-related categories such as personal information, documents, medical information, employment, personal life, relationships, whereabouts, online activity, and automobile information (Elfares et al., 2025, Sec. 4).
+
+
+Gaze was recorded with an EyeLink system at 2 kHz. The laboratory setup used a 1920 x 1080 display, a chin rest, a 700 mm viewing distance, and a 13-point calibration procedure. Raw signals were processed into gaze coordinates and features including fixations, saccades, and pupil information. Participants performed two tasks. In the free-viewing task, an image was displayed for five seconds and the participant rated its sensitivity for sharing on a seven-point scale, where 1 represented "very private" and 7 represented "very safe." In the search task, participants searched for a target image in a 2 x 2 collage, selected it, and then rated its sensitivity. The resulting data can be summarized as stimulus-gaze-rating triplets.
+
+
+\noindent {\small\bfseries\itshape Table 1. Summary of the original Gaze3P experimental setup.}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.32\linewidth} p{0.60\linewidth}@{}}
+\toprule
+\textbf{Component} & \textbf{Paper setup} \\
+\midrule
+Participants & 100 final participants; ages 18-35; 25 nationalities \\
+Stimuli & 1,000 VISPR images with private and safe attributes \\
+Eye tracker & EyeLink, 2 kHz, 13-point calibration \\
+Tasks & Free-viewing and 2 x 2 image-search task \\
+Privacy label & 1 = very private; 7 = very safe \\
+\bottomrule\end{longtable}}
+The authors define two families of learning tasks. Stimuli-based Perceived Privacy (SPP) includes binary privacy perception, seven-level privacy perception, contextual privacy perception, and private-attribute recognition. User-based Perceived Privacy (UPP) includes privacy-expertise prediction, user privacy profiling, and privacy-aware gaze identification. Baseline models include Decision Trees, Support Vector Machines, Logistic Regression, Random Forests, K-Nearest Neighbors, and a Transformer-based model.
+
+
+The paper claims three principal contributions: the Gaze3P dataset, a collection of gaze-based prediction tasks for perceived privacy, and a mechanism for mapping predicted privacy levels to privacy-preserving parameters such as the DP privacy budget epsilon. The third contribution is particularly important because it attempts to connect subjective user expectations with a formal privacy mechanism.
+
+
+\section*{3. Threat Model and Assumptions}
+
+The formal adversarial model is defined in the DP setting. An adversary selects two adjacent datasets, D0 and D1. A challenger randomly selects one of them, applies a DP mechanism M, and returns outputs to the adversary. The adversary attempts to infer which dataset was used. The paper relates the privacy budget epsilon to an upper bound on adversarial distinguishing advantage, using Adv\_A(epsilon) <= (e\textasciicircum{}epsilon - 1)/(e\textasciicircum{}epsilon + 1) (Elfares et al., 2025, Sec. 2 and Appendix E).
+
+
+In the empirical personalized-DP evaluation, the paper also assumes a trusted data analyst. This analyst receives the data together with the corresponding epsilon values, adds noise according to the selected privacy mechanism, and publishes aggregate statistics. In addition, several experimental assumptions are embedded in the study. User ratings are treated as ground-truth labels during supervised learning. Participants are asked to imagine that the displayed images are their own data, for example photographs in a personal phone gallery. Participants are also explicitly informed that the experiment concerns privacy.
+
+
+The proposed pipeline can be summarized as: user -> eye tracker -> gaze features -> machine-learning prediction -> perceived privacy level -> epsilon -> personalized DP -> released output. This pipeline is broader than the formal DP security game, because it contains multiple intermediate data products before the final privacy mechanism is applied.
+
+
+\section*{4. Reported Findings}
+
+The paper reports that gaze-based models perform above chance on several SPP tasks. For binary privacy perception in the person-independent setting, SVM and Logistic Regression achieve accuracies of 0.64 and 0.63, respectively. Person-specific models perform better: Logistic Regression reaches 0.75 and the Transformer reaches 0.81. When gaze and stimulus features are combined, the Transformer reaches 0.97 on binary privacy perception, 0.87 on privacy-level perception, and 0.90 on contextual privacy perception (Elfares et al., 2025, Table 1).
+
+
+\noindent {\small\bfseries\itshape Table 2. Selected SPP accuracies reported by Elfares et al. (2025).}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.24\linewidth} p{0.22\linewidth} p{0.22\linewidth} p{0.22\linewidth}@{}}
+\toprule
+\textbf{Setting / model} & \textbf{Binary} & \textbf{Privacy level} & \textbf{Contextual} \\
+\midrule
+Person-independent SVM & 0.64 & 0.34 & 0.37 \\
+Person-independent LR & 0.63 & 0.34 & 0.36 \\
+Person-specific LR & 0.75 & 0.40 & 0.40 \\
+Person-specific Transformer & 0.81 & 0.52 & 0.54 \\
+Gaze + stimuli Transformer & 0.97 & 0.87 & 0.90 \\
+\bottomrule\end{longtable}}
+The authors also report differences between privacy experts and non-experts. Experts show faster gaze shifts and more focused attention to privacy-relevant information, whereas non-experts show longer dwell times. For private-attribute recognition, the combination of gaze and stimulus information performs substantially better than gaze alone in several model configurations. Finally, the personalized-DP experiments compare static, random, and four proposed mapping functions. The relative performance of linear, exponential, sequential, and sigmoid mappings varies with the benchmark, and the authors argue that no single mapping is universally appropriate.
+
+
+\subsection*{4.1. Dataset-level evidence reported by the paper}
+
+The following numbers describe results reported by Elfares et al. (2025); they are not measurements from this repository. The paper reports that binary privacy-perception accuracy differs across person-independent and person-specific configurations. It also describes gaze-feature statistics, private-attribute recognition, and a follow-up preference study. The data source comprises 100 participants and 1,000 images. The original individual-level Gaze3P dataset was not included in the uploaded repository and has not been processed by the scripts in this submission.
+
+
+\noindent {\small\bfseries\itshape Table 2a. Selected original-paper findings (not independently reproduced).}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.57\linewidth} p{0.17\linewidth} p{0.15\linewidth}@{}}
+\toprule
+\textbf{Reported observation} & \textbf{Value} & \textbf{Source} \\
+\midrule
+Binary perceived-privacy (person-independent SVM) & 0.64 accuracy & Table 1 \\
+Binary perceived-privacy (person-specific Transformer) & 0.81 accuracy & Table 1 \\
+Binary perceived-privacy (gaze + stimuli Transformer) & 0.97 accuracy & Table 1 \\
+Binary perception (residual gaze maps Transformer) & 0.31 accuracy & Table 1 \\
+Privacy-expertise prediction (Random Forest) & 0.87 accuracy & Table 3 \\
+Expert / non-expert gaze duration comparison & p = 0.03 & Section 5.2 \\
+Privacy-expectation follow-up & 3.8 / 5 mean rating & Section 6.2 \\
+Sequential mapping preference (follow-up, N=20) & 68\% of cases & Section 6.2 \\
+\bottomrule\end{longtable}}
+Sources: Elfares et al. (2025), Tables 1 and 3, Sections 5.2 and 6.2. The source code for the separate synthetic extension does not implement these gaze-model evaluations.
+
+
+\section*{5. Critical Analysis}
+
+A central concern is whether gaze can serve as a sufficiently reliable proxy for perceived privacy. Gaze is a noisy behavioral signal and can be affected by visual saliency, brightness, contrast, fatigue, and lapses in attention in addition to privacy-related cognition. This concern becomes especially important in the paper's own saliency analysis. The authors use DeepGaze to estimate bottom-up visual saliency and subtract it from the observed gaze map. When the resulting residual gaze maps are used for prediction, performance decreases sharply compared with the original gaze features. This suggests that part of the predictive signal may originate from visually salient regions rather than from privacy perception alone. Consequently, high predictive accuracy does not automatically establish that the model has isolated a privacy-specific cognitive signal.
+
+
+A second concern is experimental priming. Participants know that the study is about privacy, so their gaze may not represent ordinary behavior. A participant who expects privacy to be evaluated may deliberately inspect faces, identity documents, credit cards, or other sensitive regions. This creates a strong top-down attentional bias and a Hawthorne-like effect. The authors acknowledge this limitation and state that the reported performance should primarily be interpreted in privacy-aware contexts. The gap between laboratory behavior and natural browsing therefore limits the extent to which the results can be transferred directly to everyday use.
+
+
+The participant population creates an additional generalizability problem. Although the study includes multiple nationalities, the authors report that most participants were students from STEM-related backgrounds. This matters because the paper itself finds measurable differences between privacy experts and non-experts. A model trained mainly on technically educated users may learn gaze strategies and privacy judgments that differ from those of the wider population. The stronger person-specific results reinforce this concern: personalization improves accuracy, but it also implies additional calibration, historical data, and adaptation for each new user, creating a cold-start and scalability problem for deployment on resource-constrained or large-scale systems.
+
+
+There is also a privacy paradox at the architectural level: gaze is used to improve privacy, but gaze itself is sensitive. The paper notes that gaze can reveal identifiers, quasi-identifiers, activities, cognitive states, and private situations. Therefore, raw gaze streams, extracted fixations, saccades, pupil measurements, and user profiles should be treated as protected assets. The formal DP adversary does not cover compromise of the eye tracker, the data-collection channel, the feature-extraction pipeline, or the gaze database. If raw gaze is exposed before the DP mechanism, the mathematical guarantee on the later released output remains valid, but it does not protect the already-compromised raw biometric signal.
+
+
+The dynamic epsilon value can also become a potential side channel if it is externally observable. Because epsilon is derived from predicted privacy sensitivity, changes in epsilon may reveal something about how sensitive a user considers the underlying content. Similarly, reliance on a trusted analyst is a strong system assumption. A compromised or honest-but-curious analyst can observe data before noise is added. An architecture based on Local Differential Privacy could reduce this trust requirement by perturbing data before it leaves the user's device, although this would introduce a different privacy-utility trade-off and would need a separate evaluation.
+
+
+Finally, the mapping from a subjective seven-point rating to epsilon is conceptually attractive but difficult to justify precisely. Epsilon is a formal privacy-loss parameter, while a Likert-style privacy judgment is subjective, contextual, and potentially inconsistent. The paper itself acknowledges that there is no universally correct mapping and therefore proposes linear, exponential, sequential, and sigmoid alternatives. The formal DP guarantee remains valid for whichever epsilon is selected; the uncertainty lies in whether that epsilon genuinely corresponds to the user's expectation. Treating self-reported ratings as ground truth creates a related methodological tension because the paper motivates gaze partly by noting that stated privacy preferences do not always align with actual behavior.
+
+
+\section*{6. Reproduction Methodology}
+
+The reproduction focused on the privacy-level-to-epsilon transformation in Section 6.1. The implementation first computes the adversarial-advantage function Adv\_A(epsilon) = (e\textasciicircum{}epsilon - 1)/(e\textasciicircum{}epsilon + 1), and then uses the inverse relation epsilon = log((1 + g(l))/(1 - g(l))) to convert a perceived privacy level l into a DP privacy budget. Four mapping functions were implemented: linear, exponential, sequential, and sigmoid. The parameters follow the paper's Figure 7 example: L = 7, epsilon\_min = 0.1, epsilon\_max = 5, and k = 1.5.
+
+
+A second experiment evaluated these mappings in a controlled new setting. The experiment used 1,200 simulated users per run and 300 independent runs. Each simulated user received a privacy level from 1 to 7 according to a fixed synthetic distribution and a binary private value. The binary value was privatized using heterogeneous randomized response, with the user's epsilon determined by the selected mapping. Two comparison settings were also evaluated: a static minimum epsilon of 0.1 and an epsilon sampled uniformly at random from 0.1 to 5. Utility was measured as the absolute difference between the true count and the count estimated from the privatized responses.
+
+
+\subsection*{6.1. Additional synthetic sensitivity protocol}
+
+The additional code executes a parameter sweep on synthetic inputs; it does not train or test a gaze-prediction model. The four epsilon mappings and epsilon endpoints are unchanged. Each run samples 1,200 binary records at prevalence 0.35, with 300 runs for each scenario. The predefined level distributions are private-skewed, uniform, and safe-skewed. For each scenario the input privacy rating is either unchanged (0\% perturbation) or is independently selected for a one-level +/-1 perturbation with probability 20\%, clipped to the 1-to-7 range. For a given run, binary records and randomized-response uniform draws are shared across comparison methods. The code reports absolute count error, mean/median epsilon, 95\%-normal-approximation intervals, and the fraction of cases where the assigned epsilon is greater than it would be under the original rating. The latter is an epsilon-assignment diagnostic; it is not a measured breach of differential privacy.
+
+
+\section*{7. Reproduction Results}
+
+The reproduced mapping values match the expected qualitative shapes described in the paper. All four mappings assign epsilon = 0.1 to privacy level 1 and epsilon = 5 to level 7. The linear mapping increases continuously across the scale. The exponential mapping remains closer to low epsilon values for most intermediate ratings. The sequential mapping creates three discrete regions, and the sigmoid mapping produces a smooth nonlinear transition.
+
+
+\noindent {\small\bfseries\itshape Table 3. Reproduced privacy-level-to-epsilon values.}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.32\linewidth} p{0.13\linewidth} p{0.13\linewidth} p{0.13\linewidth} p{0.13\linewidth}@{}}
+\toprule
+\textbf{Privacy level} & \textbf{Linear} & \textbf{Exponential} & \textbf{Sequential} & \textbf{Sigmoid} \\
+\midrule
+1 & 0.100 & 0.100 & 0.100 & 0.100 \\
+2 & 0.418 & 0.165 & 0.100 & 0.255 \\
+3 & 0.759 & 0.272 & 1.148 & 0.607 \\
+4 & 1.148 & 0.452 & 1.148 & 1.148 \\
+5 & 1.638 & 0.765 & 1.148 & 1.910 \\
+6 & 2.380 & 1.387 & 5.000 & 3.052 \\
+7 & 5.000 & 5.000 & 5.000 & 5.000 \\
+\bottomrule\end{longtable}}
+\begin{center}\includegraphics[width=0.80\linewidth]{figure\_mapping.png}\end{center}
+\noindent {\small\bfseries\itshape Figure 1. Reproduced Gaze3P privacy-level-to-epsilon mapping curves.}\par\vspace{3pt}
+In the synthetic randomized-response experiment, the static-minimum configuration produced a mean absolute count error of 257.78. The four paper-derived mappings produced mean errors of 176.52 for sequential, 171.16 for exponential, 157.91 for sigmoid, and 139.37 for linear. The random-epsilon baseline produced the smallest measured error, 40.28, but it also had the highest mean epsilon at approximately 2.55. These numbers should not be compared directly with the paper's Table 4 because the present experiment uses a different dataset, different privacy mechanism, different query, and different utility metric. The experiment therefore serves as a reproducible implementation check and a controlled extension of the mapping procedure rather than a replication of the paper's personalized-DP benchmarks.
+
+
+\noindent {\small\bfseries\itshape Table 4. Controlled synthetic randomized-response results.}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.32\linewidth} p{0.13\linewidth} p{0.13\linewidth} p{0.13\linewidth} p{0.13\linewidth}@{}}
+\toprule
+\textbf{Method} & \textbf{Mean abs. error} & \textbf{Std. abs. error} & \textbf{Mean epsilon} & \textbf{Median epsilon} \\
+\midrule
+Static minimum & 257.78 & 190.14 & 0.100 & 0.100 \\
+Sequential & 176.52 & 143.41 & 1.135 & 1.148 \\
+Exponential & 171.16 & 119.33 & 0.597 & 0.272 \\
+Sigmoid & 157.91 & 122.62 & 1.010 & 0.607 \\
+Linear & 139.37 & 110.98 & 0.996 & 0.759 \\
+Random & 40.28 & 30.33 & 2.548 & 2.546 \\
+\bottomrule\end{longtable}}
+\begin{center}\includegraphics[width=0.80\linewidth]{synthetic\_ldp\_utility.png}\end{center}
+\noindent {\small\bfseries\itshape Figure 2. Mean absolute count error in the controlled synthetic extension.}\par\vspace{3pt}
+\subsection*{7.1. Additional computational results (synthetic data only)}
+
+Table 2b contains mean absolute count errors computed from 300 runs for each synthetic distribution without rating perturbation. Table 2c shows the corresponding measurements when the one-level perturbation probability is 20\%. Full unrounded outputs, mean and median epsilon, standard deviations, and confidence-interval half-widths are available in outputs/extended\_sensitivity\_summary.csv. These are numerical outputs of the synthetic code, not empirical Gaze3P participant findings.
+
+
+\noindent {\small\bfseries\itshape Table 4a. Mean absolute count errors; 0\% rating perturbation (synthetic).}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.18\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} @{}}
+\toprule
+\textbf{Distribution} & \textbf{Static min} & \textbf{Random} & \textbf{Linear} & \textbf{Exponential} & \textbf{Sequential} & \textbf{Sigmoid} \\
+\midrule
+private skew & 288.69 & 41.86 & 138.46 & 167.05 & 194.84 & 145.14 \\
+uniform & 262.18 & 37.99 & 106.34 & 130.01 & 148.53 & 112.25 \\
+safe skew & 281.86 & 38.40 & 65.76 & 88.80 & 98.22 & 69.80 \\
+\bottomrule\end{longtable}}
+\begin{center}\includegraphics[width=0.80\linewidth]{extended\_sensitivity\_0pct.png}\end{center}
+\noindent {\small\bfseries\itshape Figure 3. Synthetic count-error comparison at 0\% rating perturbation.}\par\vspace{3pt}
+\noindent {\small\bfseries\itshape Table 4b. Mean absolute count errors; 20\% rating perturbation (synthetic).}\par\vspace{3pt}
+{\footnotesize\begin{longtable}{@{}p{0.18\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} p{0.115\linewidth} @{}}
+\toprule
+\textbf{Distribution} & \textbf{Static min} & \textbf{Random} & \textbf{Linear} & \textbf{Exponential} & \textbf{Sequential} & \textbf{Sigmoid} \\
+\midrule
+private skew & 288.69 & 41.86 & 142.49 & 166.27 & 193.93 & 148.01 \\
+uniform & 262.18 & 37.99 & 102.71 & 127.15 & 142.64 & 108.73 \\
+safe skew & 281.86 & 38.40 & 68.06 & 89.78 & 99.50 & 71.50 \\
+\bottomrule\end{longtable}}
+\begin{center}\includegraphics[width=0.80\linewidth]{extended\_sensitivity\_20pct.png}\end{center}
+\noindent {\small\bfseries\itshape Figure 4. Synthetic count-error comparison at 20\% rating perturbation.}\par\vspace{3pt}
+\subsection*{7.2. Interpretation and revision verification}
+
+Student-authored interpretation required before final submission: explain, in your own words, (i) which paper-reported dataset observations matter for your critique, (ii) what changes between the three simulated rating distributions, (iii) whether the +/-1 rating perturbation connects to the concern you already raised about inferred ratings, and (iv) how the experimental setting differs from the paper's personalized-DP mechanism. Do not treat a lower count error as sufficient evidence of better privacy; use both error and epsilon columns. This paragraph is a review prompt, not a claim that the analysis has been completed.
+
+
+\section*{8. Conclusion}
+
+Gaze3P proposes an ambitious connection between behavioral sensing and formal privacy protection. The paper demonstrates that gaze contains information correlated with privacy judgments and shows how this information can be translated into personalized DP parameters. The reproduction successfully implemented the four privacy-level-to-epsilon mappings and demonstrated their behavior both directly and in a controlled randomized-response setting.
+
+
+At the same time, the architecture raises important deployment questions. Gaze is influenced by non-privacy factors, the experimental context primes participants to think about privacy, the population is not fully representative, and person-specific accuracy introduces scalability costs. Most importantly, the gaze-processing pipeline itself creates sensitive intermediate data that is not covered by the paper's final-output DP threat model. The work therefore provides a useful proof of concept, but practical deployment would require careful protection of the entire gaze pipeline and a stronger empirical basis for mapping subjective privacy judgments to formal privacy budgets.
+
+
+\section*{References}
+
+Elfares, M., Reisert, P., Küsters, R., \& Bulling, A. (2025). Gaze3P: Gaze-Based Prediction of User-Perceived Privacy. arXiv:2507.00596v2.
+
+
+Elfares et al. (2026). Gaze3P public dataset page and artifact record. https://www.collaborative-ai.org/research/datasets/Gaze3P/ ; https://doi.org/10.5281/zenodo.17104154.
+
+
+\section*{Appendix A - Generative AI Usage Disclosure}
+
+Tool: ChatGPT (OpenAI).
+
+
+Tasks supported: Python code development, debugging, test-case creation, experiment automation, factual organization of paper-reported metrics, language editing, repository maintenance, LaTeX conversion, and report formatting. Earlier student-supplied critical-analysis paragraphs were retained. This update does not claim that generative AI independently carried out the prohibited critical interpretations, proposed original research gaps, or validated findings from the unavailable real dataset.
+
+
+Representative prompts included: implement and validate the Gaze3P mappings; generate reproducible synthetic sensitivity sweeps; compile a matching Overleaf main.tex file; prepare the DOCX/PDF report; update the existing GitHub repository archive.
+
+
+Verification: The code was run locally; CSV and plot outputs were checked. Numerical original-paper observations were cross-checked against arXiv:2507.00596v2. The final student is responsible for checking all factual material, interpreting new outputs personally, verifying the original code assumptions, and ensuring the disclosure matches their own actual AI use.
+
+
+\section*{Appendix B - Dataset provenance and reuse}
+
+Data provenance: The new sensitivity results use synthetic inputs generated by the Python code and no original Gaze3P records. The authors' public data release is referenced in paper/README.md. The optional src/dataset\_ratings\_summary.py program accepts a user-provided CSV extract with a seven-level rating column; it is not executed by run\_all.py and no real-dataset output is claimed.
+
+
+Run the entire computational reproduction with: python run\_all.py. For a separately obtained Gaze3P CSV extract: python src/dataset\_ratings\_summary.py --input PATH.csv --rating-col COLUMN\_NAME [--group-col GROUP\_NAME].
+
+
+Official original-paper data page: https://www.collaborative-ai.org/research/datasets/Gaze3P/  |  Published artifact entry: https://doi.org/10.5281/zenodo.17104154
+
+
+Final pre-submission check: replace the explicit student-interpretation prompt in Section 7.2 with the student's own text; do not attribute synthetic analysis to the original gaze dataset.
+
+
+\end{document}
